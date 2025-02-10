@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Financial AI Chatbot</title>
+    <style>
+        /* Previous styles remain the same until .message */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        h1 {
+            padding: 20px;
+            color: #1a1a1a;
+            font-size: 24px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #ffffff;
+        }
+
+        #chatbox {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        /* Updated message styles for better readability */
+        .message {
+            margin-bottom: 20px;
+            max-width: 85%;
+            padding: 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .message-header {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #424242;
+        }
+
+        .user-message {
+            background: #007AFF;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: #f5f5f5;
+            color: #2c2c2c;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* New styles for structured content */
+        .bot-response {
+            margin-top: 8px;
+        }
+
+        .bot-response ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .bot-response li {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .bot-response h3 {
+            margin: 16px 0 8px 0;
+            color: #1a1a1a;
+            font-size: 1.1em;
+        }
+
+        .bot-response p {
+            margin-bottom: 12px;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        #userInput {
+            flex-grow: 1;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #userInput:focus {
+            border-color: #007AFF;
+        }
+
+        #sendButton {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #sendButton:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Financial AI Chatbot</h1>
+        <div id="chatbox"></div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type your message here...">
+            <button id="sendButton" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function formatBotResponse(response) {
+            // Check if response contains bullet points
+            if (response.includes('**')) {
+                const sections = response.split('**');
+                let formattedResponse = '';
+                
+                sections.forEach((section, index) => {
+                    if (index % 2 === 1) { // This is a header
+                        formattedResponse += `<h3>${section}</h3>`;
+                    } else { // This is content
+                        // Format bullet points if they exist
+                        if (section.includes('•')) {
+                            const points = section.split('•').filter(point => point.trim());
+                            if (points.length > 0) {
+                                formattedResponse += '<ul>';
+                                points.forEach(point => {
+                                    formattedResponse += `<li>${point.trim()}</li>`;
+                                });
+                                formattedResponse += '</ul>';
+                            } else {
+                                formattedResponse += `<p>${section}</p>`;
+                            }
+                        } else {
+                            formattedResponse += `<p>${section}</p>`;
+                        }
+                    }
+                });
+                return formattedResponse;
+            }
+            return `<p>${response}</p>`;
+        }
+
+        function processUserInput(input) {
+            const lowerInput = input.toLowerCase().trim();
+            
+            // Enhanced response handling
+            if (lowerInput.includes('who are you') || lowerInput.includes('who made you')) {
+                return "I am a Financial AI Chatbot made by Prajnan and his team. I'm here to help you with financial queries and provide guidance on various financial topics.";
+            }
+            
+            // New response for "good"
+            if (lowerInput === 'good') {
+                return "I'm glad to hear that! How can I assist you with your financial questions today? Feel free to ask about savings, investments, budgeting, or any other financial topics.";
+            }
+            
+            return null;
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById("userInput").value;
+            if (!userInput) return;
+
+            const chatbox = document.getElementById("chatbox");
+            
+            // Create user message
+            const userDiv = document.createElement("div");
+            userDiv.className = "message user-message";
+            const userHeader = document.createElement("div");
+            userHeader.className = "message-header";
+            userHeader.textContent = "You";
+            const userContent = document.createElement("div");
+            userContent.textContent = userInput;
+            userDiv.appendChild(userHeader);
+            userDiv.appendChild(userContent);
+            chatbox.appendChild(userDiv);
+
+            // Process response
+            const predefinedResponse = processUserInput(userInput);
+
+            if (predefinedResponse) {
+                const botDiv = document.createElement("div");
+                botDiv.className = "message bot-message";
+                const botHeader = document.createElement("div");
+                botHeader.className = "message-header";
+                botHeader.textContent = "Financial AI";
+                const botContent = document.createElement("div");
+                botContent.className = "bot-response";
+                botContent.innerHTML = formatBotResponse(predefinedResponse);
+                botDiv.appendChild(botHeader);
+                botDiv.appendChild(botContent);
+                chatbox.appendChild(botDiv);
+                chatbox.scrollTop = chatbox.scrollHeight;
+            } else {
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: userInput})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const botDiv = document.createElement("div");
+                    botDiv.className = "message bot-message";
+                    const botHeader = document.createElement("div");
+                    botHeader.className = "message-header";
+                    botHeader.textContent = "Financial AI";
+                    const botContent = document.createElement("div");
+                    botContent.className = "bot-response";
+                    botContent.innerHTML = formatBotResponse(data.response);
+                    botDiv.appendChild(botHeader);
+                    botDiv.appendChild(botContent);
+                    chatbox.appendChild(botDiv);
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const errorDiv = document.createElement("div");
+                    errorDiv.className = "message bot-message";
+                    const errorHeader = document.createElement("div");
+                    errorHeader.className = "message-header";
+                    errorHeader.textContent = "Financial AI";
+                    const errorContent = document.createElement("div");
+                    errorContent.className = "bot-response";
+                    errorContent.innerHTML = "<p>Sorry, there was an error processing your request. Please try again.</p>";
+                    errorDiv.appendChild(errorHeader);
+                    errorDiv.appendChild(errorContent);
+                    chatbox.appendChild(errorDiv);
+                });
+            }
+
+            document.getElementById("userInput").value = "";
+        }
+
+        document.getElementById("userInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
