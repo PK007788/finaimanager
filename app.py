@@ -10,7 +10,7 @@ app = Flask(__name__)
 def chat_with_gemini(prompt):
     response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
     return response.text.strip()
-#gay
+
 @app.route('/')
 def index():
     # Render the main HTML page
