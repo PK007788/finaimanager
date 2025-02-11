@@ -10,8 +10,7 @@ api_key = os.getenv("API_KEY")  # Get the API key from the environment variables
 
 genai.configure(api_key="api_key")# Configure the Gemini API with your API key
 
-app = Flask(__name__)
-
+app = Flask(__name__) # Create a Flask app
 def chat_with_gemini(prompt):
     response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
     return response.text.strip()
