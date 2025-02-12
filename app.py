@@ -8,7 +8,7 @@ load_dotenv(dotenv_path="KEY.env")  # Load the environment variables from the KE
 
 api_key = os.getenv("API_KEY")  # Get the API key from the environment variables
 
-genai.configure(api_key=api_key) # Configure the Gemini API with your API key
+genai.configure(api_key=api_key) # Also for this to work use **pip install python-dotenv** in terminal
 
 app = Flask(__name__) # Create a Flask app
 def chat_with_gemini(prompt):
