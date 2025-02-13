@@ -1,20 +1,16 @@
 from flask import Flask, request, jsonify, render_template
-import google.generativeai as genai # Import the GenerativeAI module from the Google API
-import yfinance as yf # Import the yfinance module to fetch live market data
-from dotenv import load_dotenv # Import the load_dotenv function from the dotenv module
-import os # Import the os module to access environment variables
+import google.generativeai as genai
+import yfinance as yf
 
-load_dotenv(dotenv_path="KEY.env")  # Load the environment variables from the KEY.env file
+# Configure the Gemini API with your API key
+genai.configure(api_key="AIzaSyBVZFSAcyKqwBHCF4xXOuNPxTFph31eU9w")
 
-api_key = os.getenv("API_KEY")  # Get the API key from the environment variables
+app = Flask(__name__)
 
-genai.configure(api_key=api_key) # Also for this to work use **pip install python-dotenv** in terminal
-
-app = Flask(__name__) # Create a Flask app
 def chat_with_gemini(prompt):
     response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
     return response.text.strip()
-
+#gay
 @app.route('/')
 def index():
     # Render the main HTML page
