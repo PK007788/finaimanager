@@ -1,4 +1,4 @@
-import streamlit as st  # Install the streamlit library as it may not be downloaded by default using **pip install streamlit** in terminal
+import streamlit as st #Install the streamlit library as it may not be dowloaded by default using ** pip install streamlit** in terminal
 import random
 import time
 import test
@@ -9,6 +9,7 @@ def response_generator(prompt):
     for word in response.split():
         yield word + " "
         time.sleep(0.05)
+
 
 st.title("FinAI ChatBot")
 
@@ -31,8 +32,6 @@ if prompt := st.chat_input("What is up?"):
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        response = ""
-        for word in response_generator(prompt):
-            response += word
-            st.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        response = st.write_stream(response_generator(prompt))
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
