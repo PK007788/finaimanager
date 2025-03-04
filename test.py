@@ -6,6 +6,7 @@ $ pip install google.ai.generativelanguage
 
 import os
 import google.generativeai as genai
+import yfinance as yf
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path="KEY.env")
@@ -25,7 +26,37 @@ model = genai.GenerativeModel(
   generation_config=generation_config,
 )
 
+# Dictionary mapping company names to their stock tickers
+company_to_ticker = {
+    "apple": "AAPL",
+    "microsoft": "MSFT",
+    "google": "GOOGL",
+    "amazon": "AMZN",
+    "facebook": "META",
+    "tesla": "TSLA",
+    # Add more companies and their tickers as needed
+}
+
+def get_stock_price(stock_symbol):
+    stock = yf.Ticker(stock_symbol)
+    data = stock.history(period="1d")
+    if not data.empty:
+        latest_price = data["Close"].iloc[-1]
+        return f"The latest price of {stock_symbol} is ${latest_price:.2f}"
+    else:
+        return f"Could not retrieve data for {stock_symbol}"
+
 def GenerateResponse(input_text):
+    # Check if the input is a stock price query
+    if "price of" in input_text.lower():
+        company_name = input_text.split("price of")[-1].strip().lower()
+        stock_symbol = company_to_ticker.get(company_name)
+        if stock_symbol:
+            return get_stock_price(stock_symbol)
+        else:
+            return f"Could not find the stock ticker for {company_name}"
+    
+    # Generate response using Gemini model
     response = model.generate_content([
         "You are FinAIBot, a personalized Financial Assistant Made to Help in this Domain of topic only, so act accordingly",
         "input: Hi",
@@ -40,6 +71,7 @@ def GenerateResponse(input_text):
 
     return response.text
 
+# Uncomment the following lines to test the chatbot in a loop
 #while True:
     #string = str(input("Enter your prompt: "))
-    #print("FinAIBot: ",GenerateResponse(string))
+    #print("FinAIBot: ", GenerateResponse(string))

@@ -1,32 +1,21 @@
 from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
-import google.generativeai as genai
-import yfinance as yf
-from dotenv import load_dotenv
-import os
+import google.generativeai as genai # Import the GenerativeAI module from the Google API
+import yfinance as yf # Import the yfinance module to fetch live market data
+from dotenv import load_dotenv # Import the load_dotenv function from the dotenv module
+import os # Import the os module to access environment variables
 
-# Load environment variables
-load_dotenv()
-api_key = os.getenv("API_KEY")
+load_dotenv(dotenv_path="KEY.env")  # Load the environment variables from the KEY.env file
 
-# Check if API key is loaded
-if not api_key:
-    raise ValueError("API_KEY not found! Ensure it's set in the .env file.")
+api_key = os.getenv("API_KEY")  # Get the API key from the environment variables
 
-# Configure Gemini AI API
-genai.configure(api_key=api_key)
+genai.configure(api_key=api_key) # Also for this to work use **pip install python-dotenv** in terminal
 
-# Initialize Flask app
-app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend requests
-
-# Function to get response from Gemini AI
+app = Flask(__name__) # Create a Flask app
 def chat_with_gemini(prompt):
     response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
     return response.text.strip()
 
-# Route to serve React frontend
-@app.route("/")
+@app.route('/')
 def index():
     return render_template("index.html")
 
